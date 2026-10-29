@@ -1,0 +1,727 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Creta Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one centred column (max 760px); a slim top bar with brand, scores and theme; six screens swap inside <main>. */
+:root {
+  --bg: #edf0f7;
+  --surface: #ffffff;
+  --surface-2: #e3e8f3;
+  --fg: #101828;
+  --muted: #55607a;
+  --line: #cdd5e6;
+  --accent: #3347f0;
+  --accent-fg: #ffffff;
+  --accent-soft: #dfe3ff;
+  --good: #0e8a55;
+  --good-bg: #d8f3e5;
+  --bad: #c92a3a;
+  --bad-bg: #fbdde0;
+  --warn: #a35f00;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1020;
+    --surface: #151b33;
+    --surface-2: #1e2644;
+    --fg: #eaeefb;
+    --muted: #9aa5c6;
+    --line: #2b3560;
+    --accent: #7c8cff;
+    --accent-fg: #0c1020;
+    --accent-soft: #232d63;
+    --good: #4fd59a;
+    --good-bg: #123b2c;
+    --bad: #ff7a86;
+    --bad-bg: #43161c;
+    --warn: #f0b04a;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1020;
+  --surface: #151b33;
+  --surface-2: #1e2644;
+  --fg: #eaeefb;
+  --muted: #9aa5c6;
+  --line: #2b3560;
+  --accent: #7c8cff;
+  --accent-fg: #0c1020;
+  --accent-soft: #232d63;
+  --good: #4fd59a;
+  --good-bg: #123b2c;
+  --bad: #ff7a86;
+  --bad-bg: #43161c;
+  --warn: #f0b04a;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 0 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; letter-spacing: -0.01em; }
+p { margin: 0; }
+.wrap { max-width: 760px; margin-inline: auto; min-width: 0; }
+
+/* top bar */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 16px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; padding: 4px; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
+.brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; }
+.brand-mark svg { width: 20px; height: 20px; display: block; }
+.top-actions { display: flex; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 0.875rem; font-weight: 500; }
+.chip:hover { border-color: var(--accent); }
+.meander { height: 10px; border-radius: 3px; margin-bottom: 28px; background:
+  repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 20px),
+  repeating-linear-gradient(90deg, transparent 0 10px, var(--accent-soft) 10px 20px);
+  background-size: 100% 4px, 100% 4px; background-position: 0 0, 0 6px; background-repeat: no-repeat; }
+
+/* screens */
+.screen[hidden] { display: none !important; }
+.screen { display: flex; flex-direction: column; gap: 24px; }
+.screen:focus, h1:focus, h2:focus { outline: none; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.lead { color: var(--muted); max-width: 52ch; }
+
+/* welcome */
+.hero h1 { font-size: clamp(2.6rem, 9vw, 4.6rem); font-weight: 800; line-height: 0.98; }
+.hero h1 span { color: var(--accent); }
+.hero { display: flex; flex-direction: column; gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 18px; box-shadow: var(--shadow); }
+.field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.field label, .field .label { font-weight: 700; font-size: 0.9rem; }
+.input { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); }
+.input:focus-visible { border-color: var(--accent); outline-offset: 1px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { flex: 1 1 140px; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); text-align: left; display: flex; flex-direction: column; }
+.seg button b { font-family: var(--font-display); font-size: 1.1rem; }
+.seg button small { color: var(--muted); }
+.seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 12px; border: 1.5px solid transparent; font-weight: 700; background: var(--accent); color: var(--accent-fg); }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--accent); filter: none; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn-row .btn { flex: 1 1 160px; }
+
+/* categories */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.cat { text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; box-shadow: var(--shadow); transition: transform 0.15s, border-color 0.15s; }
+.cat:hover { border-color: var(--accent); transform: translateY(-2px); }
+.cat-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+.cat h3 { font-size: 1.3rem; }
+.cat p { color: var(--muted); font-size: 0.9rem; }
+.cat .count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); margin-top: auto; }
+
+/* quiz */
+.quiz-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.quiz-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pill { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.pill.timer.low { color: var(--bad); border-color: var(--bad); }
+.progress { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.3s; }
+.timebar > i { background: var(--good); transition: width 0.1s linear; }
+.timebar.low > i { background: var(--bad); }
+.question { font-size: clamp(1.4rem, 4.6vw, 2rem); font-weight: 700; line-height: 1.2; }
+.options { display: grid; gap: 10px; }
+.opt { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 12px; text-align: left; padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1.5px solid var(--line); min-width: 0; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .key { width: 34px; height: 34px; border-radius: 9px; background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; }
+.opt .txt { overflow-wrap: anywhere; }
+.opt .mark { font-weight: 800; }
+.opt:disabled { cursor: default; color: var(--fg); }
+.opt.correct { background: var(--good-bg); border-color: var(--good); }
+.opt.correct .mark { color: var(--good); }
+.opt.wrong { background: var(--bad-bg); border-color: var(--bad); }
+.opt.wrong .mark { color: var(--bad); }
+.opt.dim { opacity: 0.55; }
+.feedback { border-radius: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.feedback strong { font-family: var(--font-display); font-size: 1.1rem; }
+.feedback.ok strong { color: var(--good); }
+.feedback.no strong { color: var(--bad); }
+.feedback p { color: var(--muted); font-size: 0.95rem; }
+
+/* results */
+.score-card { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+.ring { width: 150px; height: 150px; position: relative; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { stroke: var(--surface-2); }
+.ring .arc { stroke: var(--accent); transition: stroke-dashoffset 0.9s ease; }
+.ring .pct { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 2rem; }
+.big-score { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 8vw, 3.2rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--font-mono); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 0.8rem; }
+
+/* review + leaderboard */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.review-list, .board { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.review-item { background: var(--surface); border: 1px solid var(--line); border-left-width: 5px; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.review-item.ok { border-left-color: var(--good); }
+.review-item.no { border-left-color: var(--bad); }
+.review-item h3 { font-size: 1.1rem; line-height: 1.25; }
+.review-item .row { font-size: 0.92rem; overflow-wrap: anywhere; }
+.review-item .row b { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: inline-block; min-width: 92px; }
+.review-item .why { color: var(--muted); font-size: 0.9rem; }
+.board li { display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.board .rank { font-family: var(--font-mono); font-weight: 700; color: var(--muted); }
+.board li:nth-child(1) .rank { color: var(--accent); }
+.board .who { min-width: 0; }
+.board .who b { display: block; overflow-wrap: anywhere; }
+.board .who span { color: var(--muted); font-size: 0.8rem; }
+.board .pts { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+.empty { text-align: center; padding: 36px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius); color: var(--muted); display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.empty h3 { color: var(--fg); font-size: 1.3rem; }
+
+@media (max-width: 520px) {
+  .score-card { grid-template-columns: 1fr; justify-items: start; }
+  .ring { width: 130px; height: 130px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <header class="topbar">
+    <button class="brand" id="brand-btn" type="button" aria-label="Creta Quiz home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none" stroke="var(--accent-fg)" stroke-width="2.2" stroke-linecap="square"><path d="M3 17V3h14v10H8V8h5"/></svg>
+      </span>
+      Creta Quiz
+    </button>
+    <div class="top-actions">
+      <button class="chip" id="board-btn" type="button">Leaderboard</button>
+      <button class="chip" id="theme-btn" type="button" aria-label="Switch colour theme">Theme</button>
+    </div>
+  </header>
+  <div class="meander" aria-hidden="true"></div>
+
+  <main>
+    <!-- 1. Welcome -->
+    <section class="screen" id="screen-home" aria-labelledby="home-title">
+      <div class="hero">
+        <p class="eyebrow">32 questions · 4 topics · timed</p>
+        <h1 id="home-title" tabindex="-1">Think fast.<br><span>Answer faster.</span></h1>
+        <p class="lead">Pick a topic, beat the 20 second clock on every question and climb the leaderboard on this device.</p>
+      </div>
+      <div class="panel">
+        <div class="field">
+          <label for="player-name">Your name</label>
+          <input class="input" id="player-name" type="text" maxlength="20" placeholder="e.g. Ananya" autocomplete="nickname">
+        </div>
+        <div class="field" role="group" aria-labelledby="len-label">
+          <span class="label" id="len-label">Quiz length</span>
+          <div class="seg" id="len-seg">
+            <button type="button" data-len="5" aria-pressed="false"><b>Quick</b><small>5 questions</small></button>
+            <button type="button" data-len="8" aria-pressed="true"><b>Full</b><small>8 questions</small></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="start-btn" type="button">Choose a topic</button>
+          <button class="btn ghost" id="home-board-btn" type="button">View leaderboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Topics -->
+    <section class="screen" id="screen-cats" aria-labelledby="cats-title" hidden>
+      <div>
+        <p class="eyebrow">Step 2 of 2</p>
+        <h2 id="cats-title" tabindex="-1" style="font-size:2.2rem;margin-top:6px">Pick a topic</h2>
+      </div>
+      <div class="cat-grid" id="cat-grid"></div>
+      <div class="btn-row"><button class="btn ghost" id="cats-back" type="button">Back</button></div>
+    </section>
+
+    <!-- 3. Quiz -->
+    <section class="screen" id="screen-quiz" aria-label="Quiz" hidden>
+      <div class="quiz-head">
+        <div>
+          <p class="eyebrow" id="q-cat">Topic</p>
+          <p class="eyebrow" id="q-count" style="margin-top:2px">Question 1 of 8</p>
+        </div>
+        <div class="quiz-meta">
+          <span class="pill" id="q-streak" title="Current streak">Streak 0</span>
+          <span class="pill" id="q-score" title="Score">0 pts</span>
+          <span class="pill timer" id="q-timer" aria-label="Time left">20s</span>
+          <button class="chip" id="quit-btn" type="button">Quit</button>
+        </div>
+      </div>
+      <div class="progress" aria-hidden="true"><i id="q-progress"></i></div>
+      <div class="progress timebar" id="timebar" aria-hidden="true"><i id="q-time"></i></div>
+      <h2 class="question" id="q-text" tabindex="-1"></h2>
+      <div class="options" id="q-options"></div>
+      <div id="q-feedback" aria-live="polite"></div>
+      <div class="btn-row"><button class="btn" id="next-btn" type="button" hidden>Next question</button></div>
+    </section>
+
+    <!-- 4. Results -->
+    <section class="screen" id="screen-result" aria-labelledby="res-title" hidden>
+      <div>
+        <p class="eyebrow" id="res-cat">Topic</p>
+        <h2 id="res-title" tabindex="-1" style="font-size:2.2rem;margin-top:6px">Quiz complete</h2>
+      </div>
+      <div class="panel">
+        <div class="score-card">
+          <div class="ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="12"/>
+              <circle class="arc" id="res-arc" cx="60" cy="60" r="52" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+            </svg>
+            <div class="pct" id="res-pct">0%</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+            <div class="big-score" id="res-score">0</div>
+            <p class="lead" id="res-msg"></p>
+            <p class="eyebrow" id="res-rank"></p>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="res-correct">0/0</b><span>Correct</span></div>
+          <div class="stat"><b id="res-streak">0</b><span>Best streak</span></div>
+          <div class="stat"><b id="res-avg">0s</b><span>Avg. answer time</span></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="res-review" type="button">Review answers</button>
+        <button class="btn ghost" id="res-again" type="button">Play again</button>
+        <button class="btn ghost" id="res-board" type="button">Leaderboard</button>
+      </div>
+    </section>
+
+    <!-- 5. Review -->
+    <section class="screen" id="screen-review" aria-labelledby="rev-title" hidden>
+      <div>
+        <p class="eyebrow">Your answers</p>
+        <h2 id="rev-title" tabindex="-1" style="font-size:2.2rem;margin-top:6px">Review</h2>
+      </div>
+      <div class="filters" id="rev-filters">
+        <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-f="wrong" aria-pressed="false">Missed only</button>
+      </div>
+      <ol class="review-list" id="rev-list"></ol>
+      <div class="btn-row">
+        <button class="btn ghost" id="rev-back" type="button">Back to results</button>
+        <button class="btn" id="rev-again" type="button">Play again</button>
+      </div>
+    </section>
+
+    <!-- 6. Leaderboard -->
+    <section class="screen" id="screen-board" aria-labelledby="board-title" hidden>
+      <div>
+        <p class="eyebrow">Top 10 on this device</p>
+        <h2 id="board-title" tabindex="-1" style="font-size:2.2rem;margin-top:6px">Leaderboard</h2>
+      </div>
+      <div id="board-body"></div>
+      <div class="btn-row">
+        <button class="btn" id="board-play" type="button">Play a quiz</button>
+        <button class="btn ghost" id="board-clear" type="button">Clear scores</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Question bank ---------- */
+  var BANK = {
+    science: {
+      label: "Science", icon: "Sc", blurb: "Atoms, cells, planets and the odd constant.",
+      items: [
+        { q: "What is the chemical symbol for gold?", o: ["Au", "Ag", "Gd", "Go"], a: 0, why: "Au comes from the Latin word aurum." },
+        { q: "Which planet is known as the Red Planet?", o: ["Venus", "Mars", "Mercury", "Jupiter"], a: 1, why: "Iron oxide on its surface gives Mars its rusty colour." },
+        { q: "Which organelle is called the powerhouse of the cell?", o: ["Nucleus", "Ribosome", "Mitochondrion", "Golgi body"], a: 2, why: "Mitochondria release usable energy as ATP." },
+        { q: "Roughly how fast does light travel in a vacuum?", o: ["300 km/s", "3,000 km/s", "300,000 km/s", "3,000,000 km/s"], a: 2, why: "About 299,792 km per second." },
+        { q: "Which gas do plants absorb for photosynthesis?", o: ["Oxygen", "Nitrogen", "Hydrogen", "Carbon dioxide"], a: 3, why: "Plants turn carbon dioxide and water into sugar and oxygen." },
+        { q: "What is the hardest naturally occurring substance?", o: ["Quartz", "Diamond", "Topaz", "Steel"], a: 1, why: "Diamond tops the Mohs scale at 10." },
+        { q: "How many bones are in the adult human body?", o: ["186", "206", "226", "256"], a: 1, why: "Babies are born with around 270 that fuse over time." },
+        { q: "At sea level, water boils at what temperature?", o: ["90 °C", "100 °C", "110 °C", "212 °C"], a: 1, why: "100 °C, which is also 212 °F." }
+      ]
+    },
+    geo: {
+      label: "Geography", icon: "Ge", blurb: "Capitals, oceans, islands and borders.",
+      items: [
+        { q: "Which is the largest ocean on Earth?", o: ["Atlantic", "Indian", "Arctic", "Pacific"], a: 3, why: "The Pacific covers about a third of the planet's surface." },
+        { q: "What is the capital of Australia?", o: ["Sydney", "Melbourne", "Canberra", "Perth"], a: 2, why: "Canberra was purpose-built as a compromise between Sydney and Melbourne." },
+        { q: "Which is the largest island in Greece?", o: ["Rhodes", "Corfu", "Naxos", "Crete"], a: 3, why: "Crete is also the fifth largest island in the Mediterranean." },
+        { q: "Which country has the largest population today?", o: ["China", "India", "United States", "Indonesia"], a: 1, why: "India passed China in 2023." },
+        { q: "Mount Everest sits on the border of Nepal and which country?", o: ["India", "Bhutan", "China", "Pakistan"], a: 2, why: "The border with Tibet, China, runs across the summit ridge." },
+        { q: "On which continent is the Sahara Desert?", o: ["Asia", "Africa", "Australia", "South America"], a: 1, why: "It covers much of North Africa." },
+        { q: "What is the capital of Canada?", o: ["Toronto", "Vancouver", "Montreal", "Ottawa"], a: 3, why: "Ottawa sits on the Ontario and Quebec border." },
+        { q: "Which is the smallest country in the world by area?", o: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], a: 1, why: "Vatican City covers under half a square kilometre." }
+      ]
+    },
+    history: {
+      label: "History", icon: "Hi", blurb: "Empires, wars and first steps on the Moon.",
+      items: [
+        { q: "In which year did World War II end?", o: ["1943", "1944", "1945", "1946"], a: 2, why: "Japan's surrender in September 1945 ended the war." },
+        { q: "Who was the first President of the United States?", o: ["Thomas Jefferson", "George Washington", "Abraham Lincoln", "John Adams"], a: 1, why: "Washington served from 1789 to 1797." },
+        { q: "What is the name of the ancient Egyptian picture writing?", o: ["Cuneiform", "Runes", "Hieroglyphs", "Sanskrit"], a: 2, why: "The Rosetta Stone helped scholars decode it." },
+        { q: "The Minoan civilisation, known for the palace at Knossos, flourished on which island?", o: ["Cyprus", "Sicily", "Malta", "Crete"], a: 3, why: "Minoan Crete thrived roughly 3000 to 1100 BCE." },
+        { q: "In which year did the Berlin Wall fall?", o: ["1979", "1985", "1989", "1991"], a: 2, why: "It opened on 9 November 1989." },
+        { q: "In which year did India gain independence from British rule?", o: ["1942", "1947", "1950", "1952"], a: 1, why: "Independence came on 15 August 1947." },
+        { q: "Who painted the Mona Lisa?", o: ["Michelangelo", "Raphael", "Leonardo da Vinci", "Botticelli"], a: 2, why: "Leonardo worked on it in the early 1500s." },
+        { q: "Who was the first person to walk on the Moon?", o: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"], a: 1, why: "Armstrong stepped out of Apollo 11 on 20 July 1969." }
+      ]
+    },
+    tech: {
+      label: "Web & Code", icon: "</>", blurb: "HTML, CSS, JavaScript and the web itself.",
+      items: [
+        { q: "What does HTML stand for?", o: ["HyperText Markup Language", "High Tech Modern Language", "HyperTransfer Markup Logic", "Home Tool Markup Language"], a: 0, why: "HTML describes the structure of a web page." },
+        { q: "Which CSS property changes the colour of text?", o: ["font-color", "text-style", "color", "foreground"], a: 2, why: "color sets the foreground colour of text." },
+        { q: "Which method finds an element by its id in JavaScript?", o: ["document.getElementById()", "document.findId()", "document.selectId()", "document.byId()"], a: 0, why: "querySelector('#id') does the same job." },
+        { q: "Which of these is not a JavaScript data type?", o: ["string", "boolean", "undefined", "float"], a: 3, why: "JavaScript uses a single number type for integers and decimals." },
+        { q: "Which CSS unit is relative to the width of the viewport?", o: ["em", "vw", "px", "pt"], a: 1, why: "1vw equals 1% of the viewport width." },
+        { q: "What does the HTTP status code 404 mean?", o: ["Server error", "Forbidden", "Not Found", "Redirect"], a: 2, why: "The server could not find the requested resource." },
+        { q: "Which operator checks equality of value and type in JavaScript?", o: ["=", "==", "===", "=>"], a: 2, why: "=== does not coerce types, so 5 === '5' is false." },
+        { q: "Which HTML tag creates the largest heading?", o: ["<h6>", "<head>", "<title>", "<h1>"], a: 3, why: "<h1> is the top level, <h6> the lowest." }
+      ]
+    }
+  };
+  var TIME_LIMIT = 20;
+  var STORE_KEY = "creta-quiz-scores-v1";
+
+  /* ---------- State ---------- */
+  var S = { name: "", len: 8, catKey: null, deck: [], i: 0, score: 0, streak: 0, best: 0, answers: [], left: TIME_LIMIT, timer: null, locked: false, started: 0, times: [], lastRank: 0 };
+  var memoryScores = [];
+
+  /* ---------- Helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function shuffle(a) {
+    var r = a.slice();
+    for (var i = r.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = r[i]; r[i] = r[j]; r[j] = t; }
+    return r;
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function show(id, focusId) {
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].hidden = screens[i].id !== id;
+    window.scrollTo(0, 0);
+    var f = $(focusId);
+    if (f) f.focus({ preventScroll: true });
+  }
+  function loadScores() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) { var p = JSON.parse(raw); if (Array.isArray(p)) return p; }
+    } catch (e) {}
+    return memoryScores;
+  }
+  function saveScores(list) {
+    memoryScores = list;
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  function catLabel(key) { return key === "mixed" ? "Mixed" : BANK[key].label; }
+
+  /* ---------- Theme ---------- */
+  function currentTheme() {
+    var d = document.documentElement.getAttribute("data-theme");
+    if (d) return d;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function paintThemeBtn() { $("theme-btn").textContent = currentTheme() === "dark" ? "Light mode" : "Dark mode"; }
+  $("theme-btn").addEventListener("click", function () {
+    document.documentElement.setAttribute("data-theme", currentTheme() === "dark" ? "light" : "dark");
+    paintThemeBtn();
+  });
+  paintThemeBtn();
+
+  /* ---------- Home ---------- */
+  var lenBtns = document.querySelectorAll("#len-seg button");
+  Array.prototype.forEach.call(lenBtns, function (b) {
+    b.addEventListener("click", function () {
+      S.len = parseInt(b.getAttribute("data-len"), 10);
+      Array.prototype.forEach.call(lenBtns, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    });
+  });
+  function goHome() { stopTimer(); show("screen-home", "home-title"); }
+  $("brand-btn").addEventListener("click", goHome);
+  $("start-btn").addEventListener("click", function () {
+    S.name = $("player-name").value.trim() || "Guest";
+    show("screen-cats", "cats-title");
+  });
+  $("player-name").addEventListener("keydown", function (e) { if (e.key === "Enter") $("start-btn").click(); });
+  $("home-board-btn").addEventListener("click", showBoard);
+  $("cats-back").addEventListener("click", goHome);
+
+  /* ---------- Topics ---------- */
+  function buildCats() {
+    var grid = $("cat-grid");
+    var keys = Object.keys(BANK).concat(["mixed"]);
+    keys.forEach(function (k) {
+      var b = el("button", "cat");
+      b.type = "button";
+      var icon = el("div", "cat-icon", k === "mixed" ? "?!" : BANK[k].icon);
+      var h = el("h3", null, k === "mixed" ? "Mixed" : BANK[k].label);
+      var p = el("p", null, k === "mixed" ? "A random pick from every topic." : BANK[k].blurb);
+      var c = el("span", "count", k === "mixed" ? "ALL TOPICS" : BANK[k].items.length + " QUESTIONS");
+      b.appendChild(icon); b.appendChild(h); b.appendChild(p); b.appendChild(c);
+      b.addEventListener("click", function () { startQuiz(k); });
+      grid.appendChild(b);
+    });
+  }
+  buildCats();
+
+  /* ---------- Quiz ---------- */
+  function buildDeck(key) {
+    var pool = [];
+    if (key === "mixed") {
+      Object.keys(BANK).forEach(function (k) { BANK[k].items.forEach(function (it) { pool.push(it); }); });
+    } else { pool = BANK[key].items.slice(); }
+    return shuffle(pool).slice(0, S.len).map(function (it) {
+      var correctText = it.o[it.a];
+      var opts = shuffle(it.o);
+      return { q: it.q, o: opts, a: opts.indexOf(correctText), why: it.why };
+    });
+  }
+  function startQuiz(key) {
+    S.catKey = key; S.deck = buildDeck(key); S.i = 0; S.score = 0; S.streak = 0; S.best = 0; S.answers = []; S.times = [];
+    $("q-cat").textContent = catLabel(key) + " · " + S.name;
+    show("screen-quiz", "q-text");
+    renderQuestion();
+  }
+  function stopTimer() { if (S.timer) { clearInterval(S.timer); S.timer = null; } }
+  function paintHud() {
+    $("q-score").textContent = S.score + " pts";
+    $("q-streak").textContent = "Streak " + S.streak;
+  }
+  function paintTime() {
+    var secs = Math.max(0, Math.ceil(S.left));
+    var low = S.left <= 5;
+    $("q-timer").textContent = secs + "s";
+    $("q-timer").classList.toggle("low", low);
+    $("timebar").classList.toggle("low", low);
+    $("q-time").style.width = (Math.max(0, S.left) / TIME_LIMIT * 100) + "%";
+  }
+  function renderQuestion() {
+    var d = S.deck[S.i];
+    S.locked = false;
+    $("q-count").textContent = "Question " + (S.i + 1) + " of " + S.deck.length;
+    $("q-progress").style.width = (S.i / S.deck.length * 100) + "%";
+    $("q-text").textContent = d.q;
+    $("q-feedback").textContent = "";
+    $("next-btn").hidden = true;
+    var box = $("q-options");
+    box.textContent = "";
+    d.o.forEach(function (text, idx) {
+      var b = el("button", "opt");
+      b.type = "button";
+      b.appendChild(el("span", "key", String.fromCharCode(65 + idx)));
+      b.appendChild(el("span", "txt", text));
+      b.appendChild(el("span", "mark", ""));
+      b.addEventListener("click", function () { answer(idx); });
+      box.appendChild(b);
+    });
+    paintHud();
+    S.left = TIME_LIMIT; S.started = Date.now();
+    paintTime();
+    stopTimer();
+    S.timer = setInterval(function () {
+      S.left = TIME_LIMIT - (Date.now() - S.started) / 1000;
+      paintTime();
+      if (S.left <= 0) { answer(-1); }
+    }, 100);
+  }
+  function answer(idx) {
+    if (S.locked) return;
+    S.locked = true;
+    stopTimer();
+    var d = S.deck[S.i];
+    var spent = Math.min(TIME_LIMIT, (Date.now() - S.started) / 1000);
+    var ok = idx === d.a;
+    var gained = 0;
+    if (ok) {
+      gained = 100 + Math.round(Math.max(0, TIME_LIMIT - spent) / TIME_LIMIT * 50);
+      S.score += gained; S.streak += 1; S.best = Math.max(S.best, S.streak);
+    } else { S.streak = 0; }
+    S.times.push(spent);
+    S.answers.push({ q: d.q, chosen: idx, correct: d.a, opts: d.o, ok: ok, why: d.why, gained: gained });
+    var btns = $("q-options").children;
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].disabled = true;
+      var mark = btns[i].querySelector(".mark");
+      if (i === d.a) { btns[i].classList.add("correct"); mark.textContent = "✓"; }
+      else if (i === idx) { btns[i].classList.add("wrong"); mark.textContent = "✗"; }
+      else { btns[i].classList.add("dim"); }
+    }
+    var fb = el("div", "feedback " + (ok ? "ok" : "no"));
+    var head = ok ? "Correct, +" + gained + " pts" : (idx === -1 ? "Time is up" : "Not quite");
+    fb.appendChild(el("strong", null, head));
+    fb.appendChild(el("p", null, d.why));
+    var holder = $("q-feedback");
+    holder.textContent = "";
+    holder.appendChild(fb);
+    paintHud();
+    $("q-progress").style.width = ((S.i + 1) / S.deck.length * 100) + "%";
+    var last = S.i === S.deck.length - 1;
+    $("next-btn").textContent = last ? "See results" : "Next question";
+    $("next-btn").hidden = false;
+    $("next-btn").focus({ preventScroll: true });
+  }
+  $("next-btn").addEventListener("click", function () {
+    if (S.i < S.deck.length - 1) { S.i += 1; renderQuestion(); $("q-text").focus({ preventScroll: true }); }
+    else { finish(); }
+  });
+  $("quit-btn").addEventListener("click", goHome);
+  document.addEventListener("keydown", function (e) {
+    if ($("screen-quiz").hidden) return;
+    var k = e.key.toLowerCase();
+    if (!S.locked && ["a", "b", "c", "d", "1", "2", "3", "4"].indexOf(k) > -1 && e.target.tagName !== "INPUT") {
+      var idx = "abcd".indexOf(k); if (idx < 0) idx = parseInt(k, 10) - 1;
+      if (idx < S.deck[S.i].o.length) answer(idx);
+    }
+  });
+
+  /* ---------- Results ---------- */
+  function finish() {
+    stopTimer();
+    var total = S.answers.length;
+    var right = S.answers.filter(function (a) { return a.ok; }).length;
+    var pct = total ? Math.round(right / total * 100) : 0;
+    var avg = S.times.length ? S.times.reduce(function (a, b) { return a + b; }, 0) / S.times.length : 0;
+
+    var list = loadScores().slice();
+    var entry = { name: S.name, score: S.score, cat: catLabel(S.catKey), right: right, total: total, at: Date.now() };
+    list.push(entry);
+    list.sort(function (a, b) { return b.score - a.score || a.at - b.at; });
+    S.lastRank = list.indexOf(entry) + 1;
+    saveScores(list.slice(0, 10));
+
+    $("res-cat").textContent = catLabel(S.catKey) + " · " + S.name;
+    $("res-score").textContent = S.score + " pts";
+    $("res-correct").textContent = right + "/" + total;
+    $("res-streak").textContent = S.best;
+    $("res-avg").textContent = avg.toFixed(1) + "s";
+    $("res-pct").textContent = pct + "%";
+    var msg = pct === 100 ? "A perfect round. Nothing got past you." :
+              pct >= 75 ? "Strong result. A few more and it is perfect." :
+              pct >= 50 ? "Solid effort. Review the misses and go again." :
+              "Tough round. The review screen explains every answer.";
+    $("res-msg").textContent = msg;
+    $("res-rank").textContent = S.lastRank <= 10 ? "Rank #" + S.lastRank + " on the leaderboard" : "Outside the top 10";
+    show("screen-result", "res-title");
+    var arc = $("res-arc");
+    arc.style.strokeDashoffset = 326.7;
+    requestAnimationFrame(function () { requestAnimationFrame(function () { arc.style.strokeDashoffset = 326.7 * (1 - pct / 100); }); });
+  }
+  $("res-again").addEventListener("click", function () { show("screen-cats", "cats-title"); });
+  $("rev-again").addEventListener("click", function () { show("screen-cats", "cats-title"); });
+  $("res-board").addEventListener("click", showBoard);
+  $("res-review").addEventListener("click", function () { renderReview("all"); show("screen-review", "rev-title"); });
+  $("rev-back").addEventListener("click", function () { show("screen-result", "res-title"); });
+
+  /* ---------- Review ---------- */
+  function renderReview(filter) {
+    var btns = document.querySelectorAll("#rev-filters button");
+    Array.prototype.forEach.call(btns, function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-f") === filter ? "true" : "false"); });
+    var list = $("rev-list");
+    list.textContent = "";
+    var shown = 0;
+    S.answers.forEach(function (a, n) {
+      if (filter === "wrong" && a.ok) return;
+      shown++;
+      var li = el("li", "review-item " + (a.ok ? "ok" : "no"));
+      li.appendChild(el("h3", null, (n + 1) + ". " + a.q));
+      var r1 = el("div", "row");
+      r1.appendChild(el("b", null, "You chose"));
+      r1.appendChild(document.createTextNode(a.chosen === -1 ? "No answer, time ran out" : a.opts[a.chosen]));
+      li.appendChild(r1);
+      if (!a.ok) {
+        var r2 = el("div", "row");
+        r2.appendChild(el("b", null, "Answer"));
+        r2.appendChild(document.createTextNode(a.opts[a.correct]));
+        li.appendChild(r2);
+      }
+      li.appendChild(el("p", "why", a.why));
+      list.appendChild(li);
+    });
+    if (!shown) {
+      var li2 = el("li", "empty");
+      li2.appendChild(el("h3", null, "No misses"));
+      li2.appendChild(el("p", null, "You answered every question correctly."));
+      list.appendChild(li2);
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#rev-filters button"), function (b) {
+    b.addEventListener("click", function () { renderReview(b.getAttribute("data-f")); });
+  });
+
+  /* ---------- Leaderboard ---------- */
+  var clearArmed = false, clearTimer = null;
+  function showBoard() {
+    stopTimer();
+    renderBoard();
+    show("screen-board", "board-title");
+  }
+  function renderBoard() {
+    var body = $("board-body");
+    body.textContent = "";
+    var list = loadScores();
+    $("board-clear").hidden = !list.length;
+    if (!list.length) {
+      var e = el("div", "empty");
+      e.appendChild(el("h3", null, "No scores yet"));
+      e.appendChild(el("p", null, "Finish a quiz and your score appears here."));
+      body.appendChild(e);
+      return;
+    }
+    var ol = el("ol", "board");
+    list.forEach(function (s, i) {
+      var li = el("li");
+      li.appendChild(el("span", "rank", "#" + (i + 1)));
+      var who = el("div", "who");
+      who.appendChild(el("b", null, s.name));
+      var d = new Date(s.at);
+      who.appendChild(el("span", null, s.cat + " · " + s.right + "/" + s.total + " correct · " + d.toLocaleDateString(undefined, { day: "numeric", month: "short" })));
+      li.appendChild(who);
+      li.appendChild(el("span", "pts", s.score + " pts"));
+      ol.appendChild(li);
+    });
+    body.appendChild(ol);
+  }
+  $("board-btn").addEventListener("click", showBoard);
+  $("board-play").addEventListener("click", function () { show("screen-home", "home-title"); });
+  $("board-clear").addEventListener("click", function () {
+    var b = $("board-clear");
+    if (!clearArmed) {
+      clearArmed = true; b.textContent = "Tap again to clear";
+      clearTimer = setTimeout(function () { clearArmed = false; b.textContent = "Clear scores"; }, 3000);
+    } else {
+      clearTimeout(clearTimer); clearArmed = false; b.textContent = "Clear scores";
+      saveScores([]); renderBoard();
+    }
+  });
+})();
+</script>
+
+</body></html>
